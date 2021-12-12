@@ -10,8 +10,6 @@ from PySide2 import QtGui
 from tools_core.asset_library.asset_browser import AssetBrowserWidget
 from tools_core.asset_library import library_manager as lm
 
-reload(AssetBrowserWidget)
-
 logger = logging.getLogger(__name__)
 logger.setLevel(10)
 
