@@ -10,6 +10,10 @@ from PySide2 import QtGui
 from tools_core.asset_library.asset_browser import AssetBrowserWidget
 from tools_core.asset_library import library_manager as lm
 
+from houdini_core.pipeline.lookdev.vray_lookdev import vray_lookdev
+
+reload(AssetBrowserWidget)
+
 logger = logging.getLogger(__name__)
 logger.setLevel(10)
 
@@ -31,7 +35,7 @@ class ExampleDialog(QtWidgets.QMainWindow):
         self.create_widgets()
         self.create_layout()
         self.create_connections()
-        # self.custom_browser_setup()
+        self.custom_browser_setup()
 
     def create_actions(self):
         pass
@@ -45,10 +49,21 @@ class ExampleDialog(QtWidgets.QMainWindow):
 
             self.custom_actions[library] = {}
 
+        build_vray_material_action = QtWidgets.QAction("Build VRay Material")
+
+        self.custom_actions["Material"] = [
+            {
+                "action_object": build_vray_material_action,
+                "action_callback": partial(self.build_vray_material_action_callback)
+            }
+        ]
+
         self.asset_browser.add_actions_to_menus(self.custom_actions)
 
     def create_widgets(self):
-        self.asset_browser = AssetBrowserWidget.AssetBrowserWidget(dims=self.dims)
+        self.asset_browser = AssetBrowserWidget.AssetBrowserWidget(dims=self.dims, margin=30)
+
+        self.asset_browser.assets_tw.setColumnWidth(0, self.dims[0] * 0.15)
 
     def create_layout(self):
         central_widget = QtWidgets.QWidget(self)
@@ -63,13 +78,7 @@ class ExampleDialog(QtWidgets.QMainWindow):
         pass
 
     def create_custom_connections(self):
-        self.connection_data = [
-            {
-                "widget": "assets_tw",
-                "signal": "itemClicked",
-                "function": ""
-            }
-        ]
+        self.connection_data = []
 
         self.asset_browser.create_custom_connections(self.connection_data)
 
@@ -77,6 +86,18 @@ class ExampleDialog(QtWidgets.QMainWindow):
         # Custom Connections
         self.create_custom_connections()
         self.create_custom_actions()
+
+    def build_vray_material_action_callback(self):
+        items = self.asset_browser.assets_tw.selectedItems()
+
+        if not items:
+            return
+
+        current_library = items[0].library
+
+        if current_library in lm.STD_LIBRARIES:
+            for item in items:
+                vray_lookdev.create_vray_material(item.asset_data["material_data"])
 
 
 def main():

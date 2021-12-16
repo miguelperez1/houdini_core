@@ -2,7 +2,7 @@ import os
 
 import hou as hou
 
-from HouNode import HouNode
+from houdini_core.HouNode import HouNode
 
 
 VRAYMTL_CONNECTIONS = {
@@ -42,14 +42,12 @@ def create_vray_material(mtl_data, create_uv=True):
         float_uv_u = mtl_builder.create_node("VRayNodeFloatToTex", "UV_Repeat_U")
         float_uv_v = mtl_builder.create_node("VRayNodeFloatToTex", "UV_Repeat_V")
 
-    for tex_type in mtl_data['textures'].keys():
+    for tex_type, tex_path in mtl_data['textures'].items():
         if tex_type == "displacement":
             continue
 
-        tex_path = mtl_data['textures'][tex_type]['path']
-        use_ptex = mtl_data['textures'][tex_type]['use_ptex']
-
         # Create file texture node
+        # TODO PTex check
         tex_node = mtl_builder.create_node("VRayNodeMetaImageFile")
         tex_node.set_name("{}_{}_TEX".format(mtl_name, tex_type))
 
