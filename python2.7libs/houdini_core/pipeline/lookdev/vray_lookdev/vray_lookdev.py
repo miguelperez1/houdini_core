@@ -20,7 +20,7 @@ material_context = HouNode.HouNode(hou.node("/mat"))
 
 
 def create_vray_material(mtl_data, create_uv=True):
-    mtl_name = mtl_data['name']
+    mtl_name = mtl_data['material_name']
 
     mtl_builder = material_context.create_node("vray_vop_material")
     mtl_builder.set_name(mtl_name + "_VRayMtlBuilder")
@@ -29,13 +29,13 @@ def create_vray_material(mtl_data, create_uv=True):
 
     for c in mtl_builder.children():
         if c.name() == "vrayMtl":
-            if mtl_data['material_type'] != "VRayMtl":
+            if mtl_data['material_shader'] != "VRayMtl":
                 c.destroy()
-                mtl = mtl_builder.create_node(mtl_data['material_type'])
+                mtl = mtl_builder.create_node(mtl_data['material_shader'])
             else:
                 mtl = c
 
-    mtl.set_name(mtl_name + "_" + mtl_data['material_type'])
+    mtl.set_name(mtl_name + "_" + mtl_data['material_shader'])
 
     # Create UV
     if create_uv:
@@ -55,7 +55,7 @@ def create_vray_material(mtl_data, create_uv=True):
         tex_node.BitmapBuffer_file.set(tex_path)
 
         # Make connection to mtl
-        connections = MTL_CONNECTIONS[mtl_data['material_type']]
+        connections = MTL_CONNECTIONS[mtl_data['material_shader']]
 
         mtl.set_input(connections[tex_type], tex_node)
 

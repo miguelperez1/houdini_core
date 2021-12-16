@@ -12,20 +12,18 @@ from tools_core.asset_library import library_manager as lm
 
 from houdini_core.pipeline.lookdev.vray_lookdev import vray_lookdev
 
-reload(AssetBrowserWidget)
-
 logger = logging.getLogger(__name__)
 logger.setLevel(10)
 
 
-class ExampleDialog(QtWidgets.QMainWindow):
+class AssetBrowserUI(QtWidgets.QMainWindow):
     def __init__(self, parent=hou.ui.mainQtWindow()):
-        super(ExampleDialog, self).__init__(parent)
+        super(AssetBrowserUI, self).__init__(parent)
 
-        self.setWindowTitle("Window")
+        self.setWindowTitle("Asset Browser")
         self.setWindowFlags(self.windowFlags() ^ QtCore.Qt.WindowContextHelpButtonHint)
 
-        self.setObjectName("ExampleDialog")
+        self.setObjectName("AssetBrowserUI")
 
         self.dims = (1920, 1080)
 
@@ -97,11 +95,11 @@ class ExampleDialog(QtWidgets.QMainWindow):
 
         if current_library in lm.STD_LIBRARIES:
             for item in items:
-                vray_lookdev.create_vray_material(item.asset_data["material_data"])
+                vray_lookdev.create_vray_material(item.asset_data["materials"][0])
 
 
 def main():
-    dialog = ExampleDialog()
+    dialog = AssetBrowserUI()
     dialog.show()
 
 
