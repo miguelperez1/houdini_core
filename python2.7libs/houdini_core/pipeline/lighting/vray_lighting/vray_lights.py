@@ -1,6 +1,6 @@
 import hou as hou
 
-from HouNode import HouNode
+from houdini_core.HouNode import HouNode
 
 obj_context = hou.node("/obj")
 

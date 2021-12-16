@@ -50,3 +50,6 @@ class HouNode(object):
 
     def node_type(self):
         return self.node.type().name()
+
+    def node_path(self):
+        return self.node.path()

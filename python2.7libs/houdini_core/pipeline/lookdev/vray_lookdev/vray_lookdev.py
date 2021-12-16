@@ -72,6 +72,8 @@ def create_vray_material(mtl_data, create_uv=True):
 
     mtl_builder.layout_children()
 
+    return mtl_builder
+
 
 def create_cc_node(parent, input_node=None, name=''):
     if not isinstance(parent, HouNode.HouNode):

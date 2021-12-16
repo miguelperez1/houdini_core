@@ -11,6 +11,8 @@ from tools_core.asset_library.asset_browser import AssetBrowserWidget
 from tools_core.asset_library import library_manager as lm
 
 from houdini_core.pipeline.lookdev.vray_lookdev import vray_lookdev
+from houdini_core.asset_library.megascan_builder import megascan_builder
+from houdini_core.pipeline.lighting.vray_lighting import vray_lights
 
 logger = logging.getLogger(__name__)
 logger.setLevel(10)
@@ -47,6 +49,7 @@ class AssetBrowserUI(QtWidgets.QMainWindow):
 
             self.custom_actions[library] = {}
 
+        # Material Actions
         build_vray_material_action = QtWidgets.QAction("Build VRay Material")
 
         self.custom_actions["Material"] = [
@@ -56,6 +59,33 @@ class AssetBrowserUI(QtWidgets.QMainWindow):
             }
         ]
 
+        # Prop Actions
+        build_megascan_action = QtWidgets.QAction("Build Megascan")
+
+        self.custom_actions["Prop"] = [
+            {
+                "action_object": build_megascan_action,
+                "action_callback": partial(self.build_megascan_action_callback),
+                "action_asset_data_conditions": ["megascan_id"]
+            }
+        ]
+
+        # Lights
+        import_vray_light_action = QtWidgets.QAction("Create Light")
+
+        self.custom_actions["StudioLights"] = [
+            {
+                "action_object": import_vray_light_action,
+                "action_callback": partial(self.import_vray_light_action_callback)
+            }
+        ]
+
+        self.custom_actions["HDR"] = [
+            {
+                "action_object": import_vray_light_action,
+                "action_callback": partial(self.import_vray_light_action_callback)
+            }
+        ]
         self.asset_browser.add_actions_to_menus(self.custom_actions)
 
     def create_widgets(self):
@@ -96,6 +126,36 @@ class AssetBrowserUI(QtWidgets.QMainWindow):
         if current_library in lm.STD_LIBRARIES:
             for item in items:
                 vray_lookdev.create_vray_material(item.asset_data["materials"][0])
+
+    def import_vray_light_action_callback(self):
+        items = self.asset_browser.assets_tw.selectedItems()
+
+        if not items:
+            return
+
+        current_library = items[0].library
+
+        if current_library in lm.STD_LIBRARIES:
+            for item in items:
+                light_types = {
+                    "StudioLights": "VRayNodeLightRectangle",
+                    "HDR": "VRayNodeLightDome"
+                }
+
+                vray_lights.create_vray_light(light_types[item.library], path=item.asset_data["asset_path"],
+                                              name=item.asset_data["asset_name"])
+
+    def build_megascan_action_callback(self):
+        items = self.asset_browser.assets_tw.selectedItems()
+
+        if not items:
+            return
+
+        current_library = items[0].library
+
+        if current_library in lm.STD_LIBRARIES:
+            for item in items:
+                megascan_builder.build_megascan(item.asset_data)
 
 
 def main():
