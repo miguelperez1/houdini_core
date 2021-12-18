@@ -24,7 +24,6 @@ def create_vray_light(light_type, path=None, name=None):
     light = HouNode.HouNode(obj_context.createNode(light_type))
 
     if name:
-        name = "{}_{}".format(name, light_type) if not name.endswith("_" + light_type) else name
         light.set_name(name.replace("Node", ""))
 
     if path:

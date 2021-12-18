@@ -28,3 +28,6 @@ def build_megascan(asset_data):
     mtl_assignment_node.set_input(0, file_node)
 
     geo.layout_children()
+
+    out_node.set_display_flag(True)
+    out_node.set_render_flag(True)

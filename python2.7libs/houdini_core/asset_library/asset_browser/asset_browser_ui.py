@@ -133,17 +133,14 @@ class AssetBrowserUI(QtWidgets.QMainWindow):
         if not items:
             return
 
-        current_library = items[0].library
+        for item in items:
+            light_types = {
+                "StudioLights": "VRayNodeLightRectangle",
+                "HDR": "VRayNodeLightDome"
+            }
 
-        if current_library in lm.STD_LIBRARIES:
-            for item in items:
-                light_types = {
-                    "StudioLights": "VRayNodeLightRectangle",
-                    "HDR": "VRayNodeLightDome"
-                }
-
-                vray_lights.create_vray_light(light_types[item.library], path=item.asset_data["asset_path"],
-                                              name=item.asset_data["asset_name"])
+            vray_lights.create_vray_light(light_types[item.library], path=item.asset_data["asset_path"],
+                                          name=item.asset_data["asset_name"])
 
     def build_megascan_action_callback(self):
         items = self.asset_browser.assets_tw.selectedItems()

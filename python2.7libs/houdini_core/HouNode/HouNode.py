@@ -53,3 +53,9 @@ class HouNode(object):
 
     def node_path(self):
         return self.node.path()
+
+    def set_display_flag(self, set):
+        self.node.setDisplayFlag(set)
+
+    def set_render_flag(self, set):
+        self.node.setRenderFlag(set)
