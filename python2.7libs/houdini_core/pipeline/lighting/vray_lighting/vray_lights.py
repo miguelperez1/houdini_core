@@ -35,5 +35,7 @@ def create_vray_light(light_type, path=None, name=None):
         light.rect_tex_multiply_by_color.set(1)
     elif light_type == "VRayNodeLightDome" and path:
         light.dome_tex_multiply_by_color.set(1)
+        light.dome_spherical.set(1)
+        light.dome_adaptive.set(1)
 
     return light

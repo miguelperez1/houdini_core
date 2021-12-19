@@ -4,7 +4,6 @@ import hou as hou
 
 from houdini_core.HouNode import HouNode
 
-
 VRAYMTL_CONNECTIONS = {
     'diffuse': 0,
     'gloss': 8,
@@ -26,6 +25,7 @@ def create_vray_material(mtl_data, create_uv=True):
     mtl_builder.set_name(mtl_name + "_VRayMtlBuilder")
 
     mtl = None
+    vroutput = None
 
     for c in mtl_builder.children():
         if c.name() == "vrayMtl":
@@ -34,6 +34,8 @@ def create_vray_material(mtl_data, create_uv=True):
                 mtl = mtl_builder.create_node(mtl_data['material_shader'])
             else:
                 mtl = c
+        elif c.name() == "vrayOutput":
+            vroutput = c
 
     mtl.set_name(mtl_name + "_" + mtl_data['material_shader'])
 
@@ -43,9 +45,6 @@ def create_vray_material(mtl_data, create_uv=True):
         float_uv_v = mtl_builder.create_node("VRayNodeFloatToTex", "UV_Repeat_V")
 
     for tex_type, tex_path in mtl_data['textures'].items():
-        if tex_type == "displacement":
-            continue
-
         # Create file texture node
         # TODO PTex check
         tex_node = mtl_builder.create_node("VRayNodeMetaImageFile")
@@ -54,14 +53,6 @@ def create_vray_material(mtl_data, create_uv=True):
         # Set tex path
         tex_node.BitmapBuffer_file.set(tex_path)
 
-        # Make connection to mtl
-        connections = MTL_CONNECTIONS[mtl_data['material_shader']]
-
-        mtl.set_input(connections[tex_type], tex_node)
-
-        if tex_type == "normal":
-            mtl.bump_type.set("Normal (Tangent)")
-
         # Create CC
         cc = create_cc_node(mtl_builder, input_node=tex_node, name=tex_node.name())
 
@@ -69,6 +60,23 @@ def create_vray_material(mtl_data, create_uv=True):
         if create_uv:
             tex_node.set_input(6, float_uv_u)
             tex_node.set_input(7, float_uv_v)
+
+        if tex_type == "normal":
+            mtl.bump_type.set("Normal (Tangent)")
+
+        if tex_type == "displacement":
+            displacement = mtl_builder.create_node("VRayNodeGeomDisplacedMesh", mtl_name + "_DISP")
+
+            displacement.set_input(0, cc)
+
+            vroutput.set_input(1, displacement)
+
+            continue
+
+        # Make connection to mtl
+        connections = MTL_CONNECTIONS[mtl_data['material_shader']]
+
+        mtl.set_input(connections[tex_type], cc)
 
     mtl_builder.layout_children()
 
