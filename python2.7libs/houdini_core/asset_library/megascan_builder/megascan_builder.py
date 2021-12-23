@@ -18,6 +18,8 @@ def build_megascan(asset_data):
 
     material = vray_lookdev.create_vray_material(asset_data["materials"][0])
 
+    pack_node = geo.create_node("pack", asset_data["asset_name"] + "_pack")
+
     mtl_assignment_node.shop_materialpath1.set(material.node_path())
 
     file_node.file.set(asset_data["mesh"])
@@ -25,7 +27,8 @@ def build_megascan(asset_data):
     out_node = geo.create_node("null", asset_data["asset_name"] + "_out")
 
     out_node.set_input(0, mtl_assignment_node)
-    mtl_assignment_node.set_input(0, file_node)
+    mtl_assignment_node.set_input(0, pack_node)
+    pack_node.set_input(0, file_node)
 
     geo.layout_children()
 
