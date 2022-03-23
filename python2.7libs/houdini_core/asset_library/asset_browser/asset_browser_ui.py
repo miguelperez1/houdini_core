@@ -14,7 +14,6 @@ from houdini_core.pipeline.lookdev.vray_lookdev import vray_lookdev
 from houdini_core.asset_library.megascan_builder import megascan_builder
 from houdini_core.pipeline.lighting.vray_lighting import vray_lights
 
-reload(vray_lookdev)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(10)
