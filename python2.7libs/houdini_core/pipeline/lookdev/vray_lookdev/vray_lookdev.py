@@ -6,9 +6,9 @@ from houdini_core.HouNode import HouNode
 
 VRAYMTL_CONNECTIONS = {
     'diffuse': 0,
-    'gloss': 8,
+    'gloss': 9,
     'normal': 5,
-    'specular': 7
+    'specular': 8
 }
 
 MTL_CONNECTIONS = {
@@ -62,7 +62,7 @@ def create_vray_material(mtl_data, create_uv=True):
             tex_node.set_input(7, float_uv_v)
 
         if tex_type == "normal":
-            mtl.bump_type.set("Normal (Tangent)")
+            mtl.bump_type.set("Normal(Tangent)")
 
         if tex_type == "displacement":
             displacement = mtl_builder.create_node("VRayNodeGeomDisplacedMesh", mtl_name + "_DISP")
